@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DeepTexel: close-up texture super-resolution for Unreal Engine 5</title>
+<meta name="description" content="DeepTexel builds new texture detail on the GPU where the camera gets close, up to 1,024x the texture's real resolution. An Unreal Engine 5 plugin by kPortal.">
+<meta property="og:title" content="DeepTexel for Unreal Engine 5">
+<meta property="og:description" content="Textures that keep their detail up close: up to 1,024x the texture's real resolution, built on the GPU only where you look.">
+<meta property="og:image" content="https://deeptexel.kportal.net/media/og.jpg">
+<meta property="og:url" content="https://deeptexel.kportal.net/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0b0b0d">
+<link rel="icon" href="/media/icon128.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<header class="nav">
+  <a class="brand" href="/">DeepTexel</a>
+  <nav>
+    <a href="#compare">Compare</a>
+    <a href="#zoom">Zoom</a>
+    <a href="#how">How it works</a>
+    <a href="/docs">Docs</a>
+    <a class="btn btn-small" href="#get">Get DeepTexel</a>
+  </nav>
+</header>
+
+<main>
+
+<section class="hero">
+  <div class="hero-text">
+    <p class="eyebrow">Unreal Engine 5 plugin</p>
+    <h1>Textures that never<br><em>run out of detail.</em></h1>
+    <p class="lede">Where the camera magnifies a texture beyond its real resolution, DeepTexel builds
+      new detail on the GPU from the texture's own finer regions, up to <strong>1,024&times;</strong>,
+      only where you look.</p>
+    <div class="cta">
+      <a class="btn" href="#trailer">Watch the trailer</a>
+      <a class="btn btn-ghost" href="#compare">See it side by side</a>
+    </div>
+  </div>
+  <figure class="hero-video">
+    <video src="/media/dive.mp4" poster="/media/dive_poster.jpg" autoplay muted loop playsinline preload="metadata"
+      aria-label="A continuous zoom into Van Gogh's Wheat Field with Cypresses to 1,024 times the texture's resolution, standard texture on the left, DeepTexel on the right"></video>
+    <figcaption>One continuous zoom into a 4,000-pixel texture. Left: standard texture. Right: DeepTexel. Recorded live in Unreal Engine 5.8.</figcaption>
+  </figure>
+</section>
+
+<section id="compare" class="band">
+  <div class="section-head">
+    <p class="eyebrow">Side by side</p>
+    <h2>Drag to compare</h2>
+    <p>Same view, same texture, same frame. The left is the texture as the engine shows it; the right
+      is the texture with DeepTexel.</p>
+  </div>
+  <div class="tabs" role="tablist" aria-label="Comparison scenes">
+    <button role="tab" aria-selected="true" data-scene="canterbury" data-mag="14&times;" data-credit="Canterbury Cathedral, tower ceiling. Photo: Michael D. Beckwith, CC0">Cathedral ceiling</button>
+    <button role="tab" aria-selected="false" data-scene="wave" data-mag="19&times;" data-credit="The Wave, Arizona. Photo: Romain Guy, CC0">Sandstone</button>
+    <button role="tab" aria-selected="false" data-scene="mosaic" data-mag="30&times;" data-credit="Neptune and Amphitrite mosaic, Herculaneum. Photo: Jebulon, CC0">Roman mosaic</button>
+    <button role="tab" aria-selected="false" data-scene="vangogh1024" data-mag="1,019&times;" data-credit="Wheat Field with Cypresses, Vincent van Gogh, 1889. Public domain">Van Gogh, 1,019&times;</button>
+  </div>
+  <div class="compare" id="cmp" style="--pos:50%">
+    <img class="cmp-on" src="/media/canterbury_on.jpg" alt="With DeepTexel" width="1600" height="900">
+    <img class="cmp-off" src="/media/canterbury_off.jpg" alt="Standard texture" width="1600" height="900">
+    <span class="tag tag-left">Standard texture</span>
+    <span class="tag tag-right">With DeepTexel</span>
+    <span class="mag"><b id="cmp-mag">14&times;</b> the texture's real resolution</span>
+    <div class="handle" role="slider" tabindex="0" aria-label="Comparison divider" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50"><span></span></div>
+  </div>
+  <p class="credit" id="cmp-credit">Canterbury Cathedral, tower ceiling. Photo: Michael D. Beckwith, CC0</p>
+</section>
+
+<section id="zoom" class="band">
+  <div class="section-head">
+    <p class="eyebrow">How far can you zoom in?</p>
+    <h2>All the way to 1,024&times;</h2>
+    <p>Frames from one continuous dive. In each, the left half is the standard texture and the right
+      half is DeepTexel. Past about 30&times; the standard texture is a smooth blur; DeepTexel keeps
+      painting.</p>
+  </div>
+  <ol class="ladder">
+    <li><img src="/media/ladder_4.jpg" alt="4 times: both halves show brush strokes" loading="lazy" width="960" height="540"><span>4&times;</span></li>
+    <li><img src="/media/ladder_32.jpg" alt="32 times: the standard half softens" loading="lazy" width="960" height="540"><span>32&times;</span></li>
+    <li><img src="/media/ladder_256.jpg" alt="256 times: the standard half is a blur, DeepTexel shows strokes" loading="lazy" width="960" height="540"><span>256&times;</span></li>
+    <li><img src="/media/ladder_1024.jpg" alt="1,024 times: the standard half is flat blue, DeepTexel shows paint texture" loading="lazy" width="960" height="540"><span>1,024&times;</span></li>
+  </ol>
+</section>
+
+<section id="trailer" class="band">
+  <div class="section-head">
+    <p class="eyebrow">Trailer</p>
+    <h2>See it move</h2>
+  </div>
+  <div class="yt" id="yt">
+    <button class="yt-play" aria-label="Play the DeepTexel trailer">
+      <img src="/media/trailer_poster.jpg" alt="" loading="lazy" width="1280" height="720">
+      <span class="play"></span>
+    </button>
+  </div>
+</section>
+
+<section id="how" class="band">
+  <div class="section-head">
+    <p class="eyebrow">How it works</p>
+    <h2>Every texture is its own best reference</h2>
+    <p>Real-world surfaces and artwork look alike across scales: a brush stroke contains smaller
+      strokes, a rock face contains smaller cracks. DeepTexel uses that.</p>
+  </div>
+  <div class="steps">
+    <div><span class="num">1</span><h3>Right-click, generate</h3><p>In the editor, right-click a texture and choose <i>Generate DeepTexel Pack</i>. In under a second the GPU clusters 320,000 example patches from the texture into a pack of about 2&nbsp;MB.</p></div>
+    <div><span class="num">2</span><h3>Look closer</h3><p>When the view magnifies the texture past its resolution, the component builds the next 2&times; level around the point you're looking at, matching each patch against the texture's own examples and copying their fine detail.</p></div>
+    <div><span class="num">3</span><h3>Keep going</h3><p>Level by level, up to ten levels (1,024&times;), each in about 0.13&nbsp;s. Back-projection keeps every level faithful to the pixels above it, so from further away the texture looks exactly as before.</p></div>
+  </div>
+</section>
+
+<section class="band">
+  <div class="features">
+    <div><h3>No AI model</h3><p>No network, no training data, no extra art. The detail comes from your texture alone, and the same spot always gets the same detail.</p></div>
+    <div><h3>Within a 2&nbsp;ms budget</h3><p>Detail is built on the GPU through Unreal's render graph, inside a measured per-frame budget, and only while a level is being built.</p></div>
+    <div><h3>Drop-in</h3><p>A component and a material function. Works with your own meshes and lit or unlit materials. Ready-made framed picture actor included.</p></div>
+    <div><h3>Only where you look</h3><p>Components wake when the camera gets close and release their GPU memory when you move on. Idle textures cost nothing.</p></div>
+    <div><h3>Safe on any GPU</h3><p>It measures its own GPU time and switches itself off on GPUs too slow for it, falling back to the plain texture.</p></div>
+    <div><h3>Sample included</h3><p>A sample map with a fly-through viewer: glide right up to a mosaic and a stone block, and press F to compare.</p></div>
+  </div>
+  <figure class="wide"><img src="/media/showroom.jpg" alt="Framed photos in a dark gallery in Unreal Engine 5" loading="lazy" width="1600" height="775"></figure>
+</section>
+
+<section id="get" class="band get">
+  <div class="price-card">
+    <p class="eyebrow">DeepTexel 1.0</p>
+    <p class="price">$49.99</p>
+    <p class="soon">Coming soon to Fab</p>
+    <ul class="specs">
+      <li>Unreal Engine 5.8</li>
+      <li>Windows (Win64), DirectX 12, Shader Model 6</li>
+      <li>Tested on NVIDIA RTX 5080 and AMD</li>
+      <li>Full C++ and shader source</li>
+      <li>Sample map, viewer, documentation</li>
+    </ul>
+    <div class="cta">
+      <a class="btn" href="/docs">Read the docs</a>
+      <a class="btn btn-ghost" href="mailto:universe@kportal.net?subject=DeepTexel">Ask a question</a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <p><strong>DeepTexel</strong> by kPortal &middot; <a href="mailto:universe@kportal.net">universe@kportal.net</a> &middot; <a href="/docs">Documentation</a></p>
+  <p class="fine">Images: photos CC0 via Wikimedia Commons (Michael D. Beckwith, Romain Guy, Jebulon); Vincent van Gogh, <i>Wheat Field with Cypresses</i> (1889), public domain.
+    All comparison images are frames recorded live in Unreal Engine 5.8 on an RTX 5080.
+    Unreal and Unreal Engine are trademarks of Epic Games, Inc. &copy; 2026 kPortal.</p>
+</footer>
+
+<script src="/app.js" defer></script>
+</body>
+</html>

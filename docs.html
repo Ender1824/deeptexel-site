@@ -1,0 +1,346 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DeepTexel documentation</title>
+<meta name="description" content="How to install and use DeepTexel, close-up texture super-resolution for Unreal Engine 5.">
+<meta name="theme-color" content="#0b0b0d">
+<link rel="icon" href="/media/icon128.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<header class="nav">
+  <a class="brand" href="/">DeepTexel</a>
+  <nav>
+    <a href="/#compare">Compare</a>
+    <a href="/#zoom">Zoom</a>
+    <a href="/#how">How it works</a>
+    <a href="/docs">Docs</a>
+    <a class="btn btn-small" href="/#get">Get DeepTexel</a>
+  </nav>
+</header>
+<main class="doc">
+<h1 id="deeptexel-for-unreal-engine-5">DeepTexel for Unreal Engine 5</h1>
+<p>Textures that keep their detail as the camera gets close. Where the view magnifies a
+texture beyond its real resolution, DeepTexel builds new, finer detail on the GPU from
+the texture's own finer regions (fractal self-similarity), up to 1,024 times its real
+resolution, only where you look, and blends it in seamlessly.</p>
+<p>No AI model, no extra art, no network: each texture needs one small <strong>detail pack</strong> (about
+2 MB), generated in the editor with a right-click in under a second.</p>
+<ul>
+<li><a href="#requirements">Requirements</a></li>
+<li><a href="#quick-start-the-sample-map">Quick start: the sample map</a></li>
+<li><a href="#adding-deeptexel-to-your-own-mesh">Adding DeepTexel to your own mesh</a></li>
+<li><a href="#reference">Reference</a></li>
+<li><a href="#performance-and-memory">Performance and memory</a></li>
+<li><a href="#limitations">Limitations</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+<li><a href="#how-it-works">How it works</a></li>
+<li><a href="#credits">Credits</a></li>
+</ul>
+<h2 id="requirements">Requirements</h2>
+<ul>
+<li>Unreal Engine 5.8, Windows (Win64).</li>
+<li>DirectX 12 with <strong>Shader Model 6</strong> (the default for new UE 5.8 projects). Any DX12 GPU
+  that supports SM6 works; tested on NVIDIA (RTX 5080) and AMD.</li>
+<li>Project setting <strong>Engine &gt; Physics &gt; Support UV From Hit Results</strong> must be on (restart the
+  editor after changing it). The component tells you in its Status and the log if it is off.</li>
+<li>For very close views (beyond about 6x), a small <strong>near clip plane</strong>
+  (Project Settings &gt; Engine &gt; General Settings &gt; Near Clip Plane, e.g. 0.05). The default
+  10 cm clips away surfaces you are closer than 10 cm to. The sample viewer sets it for you.</li>
+</ul>
+<h2 id="quick-start-the-sample-map">Quick start: the sample map</h2>
+<ol>
+<li>Enable <strong>Support UV From Hit Results</strong> (above) and restart the editor.</li>
+<li>Open <code>Plugins &gt; DeepTexel Content &gt; Samples &gt; FractalDetail_Sample</code> and press Play.
+   (If the Content Browser shows no Plugins folder: its Settings &gt; <strong>Show Plugin Content</strong>.)</li>
+<li>Fly with <strong>WASD + mouse</strong> (E/Q up and down), or roll the <strong>mouse wheel</strong> to move towards
+   whatever is at the centre of the screen. Speed follows the distance to the surface, so you
+   can glide right up to the mosaic or the stone block. Press <strong>F</strong> to switch the detail off
+   and on to compare. The top-left shows the magnification and the detail status.</li>
+</ol>
+<p>The sample shows both ways to use the plugin:</p>
+<ul>
+<li><strong>Mosaic</strong>: an <code>AFractalPicture</code> actor, a ready-made framed picture.</li>
+<li><strong>Stone block</strong>: an ordinary static mesh with a lit material (<code>M_FractalDetail_Lit</code>)
+  and a <code>FractalDetail</code> component, the way you would add it to your own assets.</li>
+</ul>
+<h2 id="adding-deeptexel-to-your-own-mesh">Adding DeepTexel to your own mesh</h2>
+<ol>
+<li><strong>Generate the texture's pack.</strong> In the Content Browser, right-click the texture &gt;
+   <strong>Generate DeepTexel Pack</strong>. A <code>&lt;Texture&gt;_DetailPack</code> asset appears next to it.
+   (Several textures can be selected at once.)</li>
+<li><strong>Use the material function.</strong> In the mesh's material, where the texture is sampled, put
+   <strong>MF_FractalDetail</strong> instead:</li>
+<li><code>UV</code> input: the mesh's UV0 (a <code>TextureCoordinate</code> node, index 0, no tiling).</li>
+<li><code>Texture</code> input: the texture, as a <strong>Texture Object</strong> (parameter or node).</li>
+<li><code>Color</code> output: linear colour. Connect it to <strong>Base Color</strong> (lit) or <strong>Emissive</strong> (unlit),
+     or into whatever the texture fed before.
+   <code>Samples/Materials/M_FractalDetail_Lit</code> is a complete example.</li>
+<li><strong>Add the component.</strong> Add a <strong>DeepTexel</strong> component to the actor and set its
+   <strong>Texture</strong> (the same texture) and <strong>Pack</strong> (its pack). If the actor has several meshes,
+   the first static mesh is used; call <code>SetTargetMesh</code> to choose another, and set
+   <strong>Material Index</strong> if the material is not slot 0.</li>
+</ol>
+<p>That's all. Play, and move close to the mesh.</p>
+<h2 id="reference">Reference</h2>
+<h3 id="deeptexel-component">DeepTexel component</h3>
+<div class="table"><table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Default</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Texture</td>
+<td></td>
+<td>The texture to add detail to (the one the material shows).</td>
+</tr>
+<tr>
+<td>Pack</td>
+<td></td>
+<td>Its detail pack.</td>
+</tr>
+<tr>
+<td>Build Pack If Missing</td>
+<td>on</td>
+<td>Without a pack, build one when it first activates (a short hitch).</td>
+</tr>
+<tr>
+<td>Material Index</td>
+<td>0</td>
+<td>The material slot using MF_FractalDetail.</td>
+</tr>
+<tr>
+<td>Fractal Enabled</td>
+<td>on</td>
+<td>Switch the effect on and off at runtime.</td>
+</tr>
+<tr>
+<td>Screen Wipe</td>
+<td>0</td>
+<td>Comparison split: detail only right of this screen position (0..1).</td>
+</tr>
+<tr>
+<td><strong>Performance</strong></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Activate Magnification</td>
+<td>0.25</td>
+<td>GPU resources are made once the view magnifies the texture this much (1 = real resolution).</td>
+</tr>
+<tr>
+<td>Idle Seconds</td>
+<td>10</td>
+<td>... and freed after this long without being looked at.</td>
+</tr>
+<tr>
+<td>GPU Budget Ms</td>
+<td>2.0</td>
+<td>GPU time per frame for building detail (measured; the work adapts to it). 0 = fixed Ops Per Frame.</td>
+</tr>
+<tr>
+<td>Ops Per Frame</td>
+<td>8</td>
+<td>Dispatches per frame before the first measurement, or always if GPU Budget Ms is 0.</td>
+</tr>
+<tr>
+<td>Max Ops Per Frame</td>
+<td>64</td>
+<td>Upper limit per frame.</td>
+</tr>
+<tr>
+<td>Sample Step</td>
+<td>2</td>
+<td>Match density: 2 = smoother, steadier edges; 4 = about 2.5x faster.</td>
+</tr>
+<tr>
+<td><strong>Look</strong></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Edge Protect</td>
+<td>0.7</td>
+<td>Keep clean straight edges and corners free of copied texture (0..1).</td>
+</tr>
+<tr>
+<td>Deep Strength</td>
+<td>1.3</td>
+<td>Detail strength from the second level on (paintings ~1.3, photos ~1.0).</td>
+</tr>
+<tr>
+<td>Detail Decay</td>
+<td>1.0</td>
+<td>Detail per level relative to the level above (photos ~0.9).</td>
+</tr>
+<tr>
+<td>Detail Color</td>
+<td>0.4</td>
+<td>How much of the copied detail's colour to keep (photos ~0.2).</td>
+</tr>
+<tr>
+<td><strong>State</strong> (read only)</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Status</td>
+<td></td>
+<td>What the component is doing, or what is wrong.</td>
+</tr>
+<tr>
+<td>Magnification</td>
+<td></td>
+<td>Screen pixels per real texture pixel at the screen centre.</td>
+</tr>
+</tbody>
+</table></div>
+<p>Blueprint: <code>IsDetailReady()</code> is true once every level the current view needs has been built
+and faded in.</p>
+<h3 id="afractalpicture">AFractalPicture</h3>
+<p>A framed picture: set <strong>Picture</strong> (texture) and <strong>Width</strong>, and on its <strong>Detail</strong> component the
+<strong>Pack</strong>. Uses the unlit <code>M_FractalDetail</code>, so it shows the texture's exact colours.</p>
+<h3 id="console-variables">Console variables</h3>
+<div class="table"><table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Default</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>FractalDetail.MaxActive</code></td>
+<td>2</td>
+<td>How many components may hold GPU resources at once; the least recently viewed is released first.</td>
+</tr>
+<tr>
+<td><code>FractalDetail.MaxSlowdown</code></td>
+<td>20</td>
+<td>If the GPU builds detail this many times slower than an RTX 5080, the effect switches off for the session (0 = never).</td>
+</tr>
+<tr>
+<td><code>FractalDetail.Debug</code></td>
+<td>0</td>
+<td>Log what each component sees at the screen centre, about once a second.</td>
+</tr>
+<tr>
+<td><code>FractalDetail.TestShot</code></td>
+<td></td>
+<td>Testing: save a screenshot here once the view's detail is complete.</td>
+</tr>
+<tr>
+<td><code>FractalDetail.TestQuit</code></td>
+<td>0</td>
+<td>Testing: quit after the test screenshot.</td>
+</tr>
+</tbody>
+</table></div>
+<p>Log category: <code>LogFractalDetail</code> (activation, each level built with its GPU cost, release).</p>
+<h2 id="performance-and-memory">Performance and memory</h2>
+<p>Measured on an RTX 5080 at 1080p:</p>
+<ul>
+<li><strong>Idle:</strong> components that are not close to the camera use no GPU memory and no GPU time.</li>
+<li><strong>Active:</strong> about 0.75 GB of GPU memory per active component (search tables, work buffers,
+  ten detail levels). At most <code>FractalDetail.MaxActive</code> (default 2) are active at once.</li>
+<li><strong>Building detail:</strong> about 2 ms of GPU time per frame (GPU Budget Ms), and only while a
+  level is being built: each level takes about 0.1-0.15 s. A full close-up (9 levels) is ready
+  in about a second; after that the cost is the material's blending only.</li>
+<li><strong>Pack generation:</strong> about 0.2-0.6 s per 4K texture, in the editor.</li>
+<li><strong>Slow GPUs:</strong> the plugin measures its own GPU time. On a GPU more than 20x slower than the
+  reference (for example a small integrated GPU) it switches itself off and the material shows
+  the plain texture.</li>
+</ul>
+<h2 id="limitations">Limitations</h2>
+<ul>
+<li><strong>Windows, DX12 / SM6 only</strong> in this version.</li>
+<li>The material's <code>UV</code> input must be the mesh's UV0 as-is. Tiling in the mesh's UVs is fine;
+  scaling or offsetting UVs inside the material is not supported (the component locates detail
+  through the mesh's UV0).</li>
+<li>One texture per component (the one at the screen centre gets the detail). Use one component
+  per mesh that should get detail.</li>
+<li>Regenerate the pack if you change the texture's pixels or size (the component reports a size
+  mismatch). Compression settings can change freely.</li>
+<li>Detail is generated, not recovered: it continues the texture's own look at finer scales. It
+  is not a replacement for real high-resolution source art where accuracy matters.</li>
+</ul>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<div class="table"><table>
+<thead>
+<tr>
+<th>Status / symptom</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"enable Project Settings &gt; ... Support UV From Hit Results"</td>
+<td>Turn it on and restart the editor.</td>
+</tr>
+<tr>
+<td>"inactive (not close enough yet)"</td>
+<td>Move closer (see Activate Magnification).</td>
+</tr>
+<tr>
+<td>Surface disappears when very close</td>
+<td>Lower the Near Clip Plane (see Requirements).</td>
+</tr>
+<tr>
+<td>"pack made for a W x H texture, image is ..."</td>
+<td>The texture changed: regenerate its pack.</td>
+</tr>
+<tr>
+<td>"off: GPU too slow for fractal detail"</td>
+<td>See <code>FractalDetail.MaxSlowdown</code>.</td>
+</tr>
+<tr>
+<td>"waiting: FractalDetail.MaxActive components are all in view"</td>
+<td>Raise <code>FractalDetail.MaxActive</code> if you have the GPU memory.</td>
+</tr>
+<tr>
+<td>Nothing happens, no status</td>
+<td><code>FractalDetail.Debug 1</code> logs what the centre ray hits (the mesh needs collision).</td>
+</tr>
+<tr>
+<td>"fractal detail needs Shader Model 6"</td>
+<td>Project Settings &gt; Platforms &gt; Windows: DX12 and SM6.</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="how-it-works">How it works</h2>
+<p>When the camera magnifies a texture beyond its real resolution, the component builds the
+next 2x level of a 1024 x 1024 patch around the point at the screen centre, and keeps going a
+level at a time as you get closer (up to 10 levels). For each small patch of the upscaled
+image it searches the texture's own example patches (320,000 of them, at two scales and in
+eight orientations, clustered into 1,024 groups by the detail pack) for the one whose
+surroundings match best, and copies that example's fine detail, scaled to the local
+contrast. Back-projection makes sure that shrinking the result gives back the original
+pixels exactly, so detail never changes what the texture looks like from further away. The
+same spot always gets the same detail.</p>
+<h2 id="credits">Credits</h2>
+<p>Sample photos, both CC0 (public domain dedication), from Wikimedia Commons:</p>
+<ul>
+<li><em>Neptune and Amphitrite mosaic, Herculaneum</em>, by Jebulon.</li>
+<li><em>The Wave rock formation, Arizona</em>, by Romain Guy.</li>
+</ul>
+<h2 id="support">Support</h2>
+<p>Email universe@kportal.net with your engine version, GPU, and the component's Status or the
+<code>LogFractalDetail</code> lines from the log.</p>
+</main>
+<footer>
+  <p><strong>DeepTexel</strong> by kPortal &middot; <a href="mailto:universe@kportal.net">universe@kportal.net</a> &middot; <a href="/">Home</a></p>
+  <p class="fine">Unreal and Unreal Engine are trademarks of Epic Games, Inc. &copy; 2026 kPortal.</p>
+</footer>
+</body>
+</html>
