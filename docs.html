@@ -231,6 +231,11 @@ and faded in.</p>
 <td>If the GPU builds detail this many times slower than an RTX 5080, the effect switches off for the session (0 = never).</td>
 </tr>
 <tr>
+<td><code>FractalDetail.Show</code></td>
+<td>1</td>
+<td>0 hides all detail (the plain texture shows) while it keeps being built; for comparisons in any game.</td>
+</tr>
+<tr>
 <td><code>FractalDetail.Debug</code></td>
 <td>0</td>
 <td>Log what each component sees at the screen centre, about once a second.</td>
@@ -311,6 +316,10 @@ and faded in.</p>
 <tr>
 <td>Nothing happens, no status</td>
 <td><code>FractalDetail.Debug 1</code> logs what the centre ray hits (the mesh needs collision).</td>
+</tr>
+<tr>
+<td>"Plugin 'FractalDetail' failed to load", log shows <code>GetLastError=4551</code></td>
+<td>Windows 11 Smart App Control blocked the freshly compiled DLL (it does this to unsigned new binaries, from any plugin). Rebuild once more, or build from Visual Studio / Rider; if it persists, see Windows Security &gt; App &amp; browser control.</td>
 </tr>
 <tr>
 <td>"fractal detail needs Shader Model 6"</td>
