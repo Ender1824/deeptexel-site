@@ -257,11 +257,11 @@ and faded in.</p>
 <p>Measured on an RTX 5080 at 1080p:</p>
 <ul>
 <li><strong>Idle:</strong> components that are not close to the camera use no GPU memory and no GPU time.</li>
-<li><strong>Active:</strong> about 0.75 GB of GPU memory per active component (search tables, work buffers,
+<li><strong>Active:</strong> about 0.8 GB of GPU memory per active component (search tables, work buffers,
   ten detail levels). At most <code>FractalDetail.MaxActive</code> (default 2) are active at once.</li>
 <li><strong>Building detail:</strong> about 2 ms of GPU time per frame (GPU Budget Ms), and only while a
-  level is being built: each level takes about 0.1-0.15 s. A full close-up (9 levels) is ready
-  in about a second; after that the cost is the material's blending only.</li>
+  level is being built: each level takes about 0.12-0.17 s. A full close-up (9 levels) is ready
+  in about 1-1.5 s; after that the cost is the material's blending only.</li>
 <li><strong>Pack generation:</strong> about 0.2-0.6 s per 4K texture, in the editor.</li>
 <li><strong>Slow GPUs:</strong> the plugin measures its own GPU time. On a GPU more than 20x slower than the
   reference (for example a small integrated GPU) it switches itself off and the material shows
